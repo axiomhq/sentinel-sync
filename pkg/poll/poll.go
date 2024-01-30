@@ -118,7 +118,7 @@ func (p *Poll) loop(ctx context.Context,
 func streamContainer(ctx context.Context, wp *pond.WorkerPool,
 	azClient *azblob.Client, axClient *axiom.Client,
 	container *monitor.ContainerMonitor) {
-	logger.Printf("syncing container=%q\n", container.ContainerName())
+	logger.Printf("syncing container=%q, table=%q to axiom\n", container.ContainerName(), container.TableName())
 	wp.Submit(func() {
 		for {
 			if err := ctx.Err(); err != nil {
