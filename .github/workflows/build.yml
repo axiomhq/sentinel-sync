@@ -17,20 +17,20 @@ jobs:
       contents: read
       packages: write
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.20'
+        go-version: '1.21'
     - name: Test
       run: go test -v ./...
     - name: Build
-      run: go build -v sentinelexport ./cmd
+      run: go build -v -o artifacts/sentinelexport ./cmd
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.3.0
       with:
         name: sentinelexport
-        path: sentinelexport
+        path: artifacts/sentinelexport
         if-no-files-found: error
     - name: Docker Login
       uses: docker/login-action@v3.0.0

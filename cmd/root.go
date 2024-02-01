@@ -6,7 +6,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "axiomazure-exporter",
+	Use:   "sentinelexport",
 	Short: "exports data from azure log anaytics (via storage) to axiom",
 	Long: `exports data from azure log anaytics (via storage) to axiom.
 
