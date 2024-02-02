@@ -43,9 +43,20 @@ This is where you will select the tables you want to export, any tables not sele
 API Token support is coming soon, but for testing a Personal Access Token may be used. 
 
 ## Deploy the Azure Sentinel Exporter tool 
-TBD
 
+The Azure Sentinel Exporter tool is available as a docker container that may be deployed in a variety of ways.
 
+The favoured way is to deploy the tool into Azure Container Instances, when creating the container set the `Image Source` to `Other Registry` then set the Image to 
+> ghcr.io/axiomhq/axiomsentinel:main
+
+With the OS type set to linux. 
+
+In the Advanced tab you should be sure to set a few required environment variables: 
+- `STORAGE_URL`: the storage url of your storage account, something like `https://${yourstoragename}.blob.core.windows.net/`
+- `CONNECTION_STRING`: the connection string to access your storage account 
+- `AXIOM_PERSONAL_TOKEN`: the string for the personal access token you created to export 
+- `AXIOM_ORG`: the orginsation ID of your axiom account (if using a personal access token)
+	
 # Azure Tables vs Custom Legacy Tables
 
 ![screenshot of azure tables alongside custom tables](tables.png)
@@ -55,4 +66,20 @@ Only Azure Tables can be exported by the Log Analytics Data Export, Custom (lega
 ## Custom Legacy Table Exporting
 Custom (legacy) tables can still be exported to axiom, but must go via the less efficient and more restricted Logic Apps mechanism to run periodic queries against your custom tables, which then egress the results to axiom. See [this article](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/logs-export-logic-app) on exporting logs via logic apps
 
-In addition, the Datasets matching the Tables you are exporting *must* already exist in axiom. The dataset name must match the table name exactly
+When creating your logic-app to export your custom tables, you will need to setup a HTTP action that is configured like so:
+![Image of an example configuration](logicapp.png) 
+
+- Method: `POST`
+- URI: `https://api.axiom.co/v1/datasets/${YOUR_DATASET_NAME}/ingest`
+- Headers:
+  - `Authorization`: `Bearer ${YOUR INGEST API KEY}`
+  - `Content-Type`: `application/json`
+- Queries:
+   - `timestamp-field`: `TimeGenerated` 
+- Body: set to the value of the query result 
+
+This setup will send the json array of results from your query to axiom as a json array. the `timestamp-field` is used to inform axiom that the TimeGenerated field can be mapped to `_time`. 
+
+In addition, the Datasets matching the Tables you are exporting *must* already exist in axiom, otherwise a 404 will be returned when you run the logic app
+
+In addition, note that because of the nature of logic apps, 100% of your data is not guaranteed as logic apps have their own query/result limits that may stop all results for very large tables being returned. 
