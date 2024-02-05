@@ -24,12 +24,16 @@ var logger = log.New(os.Stdout, "poll: ", log.LstdFlags)
 // queuing up all the blobs at once
 
 type Poll struct {
+	wpsize int
+
 	cancel  context.CancelFunc
 	stopped <-chan struct{}
 }
 
-func NewPoller() *Poll {
-	return &Poll{}
+func NewPoller(workerPoolSize int) *Poll {
+	return &Poll{
+		wpsize: workerPoolSize,
+	}
 }
 
 func (p *Poll) Start(ctx context.Context,
@@ -99,7 +103,7 @@ func (p *Poll) loop(ctx context.Context,
 			containers[i], containers[j] = containers[j], containers[i]
 		})
 
-		wp := pond.New(8, 16)
+		wp := pond.New(p.wpsize, p.wpsize*2)
 		for _, container := range containers {
 			streamContainer(ctx, wp, azClient, axClient, container)
 		}
