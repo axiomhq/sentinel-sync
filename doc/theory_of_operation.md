@@ -47,7 +47,7 @@ API Token support is coming soon, but for testing a Personal Access Token may be
 The Azure Sentinel Exporter tool is available as a docker container that may be deployed in a variety of ways.
 
 The favoured way is to deploy the tool into Azure Container Instances, when creating the container set the `Image Source` to `Other Registry` then set the Image to 
-> ghcr.io/axiomhq/axiomsentinel:main
+> ghcr.io/axiomhq/sentinel-sync:main
 
 With the OS type set to linux. 
 
