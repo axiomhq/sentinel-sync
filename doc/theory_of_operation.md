@@ -56,6 +56,9 @@ In the Advanced tab you should be sure to set a few required environment variabl
 - `CONNECTION_STRING`: the connection string to access your storage account 
 - `AXIOM_PERSONAL_TOKEN`: the string for the personal access token you created to export 
 - `AXIOM_ORG`: the orginsation ID of your axiom account (if using a personal access token)
+
+> [!note]
+> Note that if you want to avoid using CONNECTION_STRING environment variables, you can configure the environment variables [listed here](https://github.com/Azure/azure-sdk-for-go/wiki/Set-up-Your-Environment-for-Authentication#configure-defaultazurecredential) for your specific azure setup. (check the container logs after deploying to troubleshoot through it, the azure libraries are fairly verbose about missing environment variables)
 	
 # Azure Tables vs Custom Legacy Tables
 
