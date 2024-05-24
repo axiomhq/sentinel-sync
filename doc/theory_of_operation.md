@@ -47,13 +47,13 @@ API Token support is coming soon, but for testing a Personal Access Token may be
 The Azure Sentinel Exporter tool is available as a docker container that may be deployed in a variety of ways.
 
 The favoured way is to deploy the tool into Azure Container Instances, when creating the container set the `Image Source` to `Other Registry` then set the Image to 
-> ghcr.io/axiomhq/sentinel-sync:main
+> axiomhq/sentinel-sync
 
 With the OS type set to linux. 
 
 In the Advanced tab you should be sure to set a few required environment variables: 
 - `STORAGE_URL`: the storage url of your storage account, something like `https://${yourstoragename}.blob.core.windows.net/`
-- `CONNECTION_STRING`: the connection string to access your storage account 
+- `CONNECTION_STRING`: the connection string to access your storage account, this can be found in the Security + Networking section of the Storage Account settings, under "Access Keys"
 - `AXIOM_PERSONAL_TOKEN`: the string for the personal access token you created to export 
 - `AXIOM_ORG`: the orginsation ID of your axiom account (if using a personal access token)
 
