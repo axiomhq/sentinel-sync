@@ -59,6 +59,11 @@ In the Advanced tab you should be sure to set a few required environment variabl
 
 > [!note]
 > Note that if you want to avoid using CONNECTION_STRING environment variables, you can configure the environment variables [listed here](https://github.com/Azure/azure-sdk-for-go/wiki/Set-up-Your-Environment-for-Authentication#configure-defaultazurecredential) for your specific azure setup. (check the container logs after deploying to troubleshoot through it, the azure libraries are fairly verbose about missing environment variables)
+
+### Optional environment variables
+
+These are totally optional and most people won't need them
+ - `AXIOM_DATASET_PREFIX`: the string this value is set to, will be used as a prefix to all axiom datasets. Example: if this is set to `AXIOM_DATASET_PREFIX="az_"`, then we will sync `ThreatIntelligenceIndicator` to `az_ThreatIntelligenceIndicator` in axiom. 
 	
 # Azure Tables vs Custom Legacy Tables
 

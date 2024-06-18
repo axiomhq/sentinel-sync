@@ -11,7 +11,6 @@ import (
 	"github.com/alitto/pond"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
-	"github.com/axiomhq/axiom-go/axiom"
 	"github.com/axiomhq/sentinelexport/pkg/axm"
 	"github.com/axiomhq/sentinelexport/pkg/monitor"
 )
@@ -37,7 +36,7 @@ func NewPoller(workerPoolSize int) *Poll {
 }
 
 func (p *Poll) Start(ctx context.Context,
-	azClient *azblob.Client, axClient *axiom.Client,
+	azClient *azblob.Client, axClient *axm.Client,
 	sam *monitor.StorageAccountMonitor,
 ) error {
 	if p.cancel != nil {
@@ -76,7 +75,7 @@ func (p *Poll) Stop() error {
 }
 
 func (p *Poll) loop(ctx context.Context,
-	azClient *azblob.Client, axClient *axiom.Client,
+	azClient *azblob.Client, axClient *axm.Client,
 	sam *monitor.StorageAccountMonitor) error {
 
 	ticker := time.NewTicker(30 * time.Second)
@@ -120,7 +119,7 @@ func (p *Poll) loop(ctx context.Context,
 }
 
 func streamContainer(ctx context.Context, wp *pond.WorkerPool,
-	azClient *azblob.Client, axClient *axiom.Client,
+	azClient *azblob.Client, axClient *axm.Client,
 	container *monitor.ContainerMonitor) {
 	logger.Printf("syncing container=%q, table=%q to axiom\n", container.ContainerName(), container.TableName())
 	wp.Submit(func() {
@@ -154,7 +153,7 @@ func streamContainer(ctx context.Context, wp *pond.WorkerPool,
 	})
 }
 
-func streamBlob(ctx context.Context, blob *monitor.Blob, datasetName string, azClient *azblob.Client, axClient *axiom.Client) error {
+func streamBlob(ctx context.Context, blob *monitor.Blob, datasetName string, azClient *azblob.Client, axClient *axm.Client) error {
 	blobStream, err := blob.Stream(ctx, azClient)
 	if err != nil {
 		return err

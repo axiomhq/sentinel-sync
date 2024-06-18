@@ -11,6 +11,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
 	"github.com/axiomhq/axiom-go/axiom"
+	"github.com/axiomhq/sentinelexport/pkg/axm"
 	"github.com/axiomhq/sentinelexport/pkg/monitor"
 	"github.com/axiomhq/sentinelexport/pkg/poll"
 	"github.com/spf13/cobra"
@@ -48,6 +49,7 @@ var (
 	connectionString    string
 	axiomPersonalAPIKey string
 	axiomPersonalOrg    string
+	axiomDatasetPrefix  string
 
 	axiomURL string
 
@@ -75,6 +77,11 @@ func init() {
 	}
 	flags.StringVar(&storageURL, "storage-url", "", "your azure storage account url; should be something like https://foobar.blob.core.windows.net/ (or env STORAGE_URL)")
 	if err := viper.BindPFlag("STORAGE_URL", flags.Lookup("storage-url")); err != nil {
+		panic(err)
+	}
+
+	flags.StringVar(&axiomDatasetPrefix, "axiom-dataset-prefix", "", "prefix to add to axiom dataset names")
+	if err := viper.BindPFlag("AXIOM_DATASET_PREFIX", flags.Lookup("axiom-dataset-prefix")); err != nil {
 		panic(err)
 	}
 }
@@ -125,10 +132,17 @@ func export(cmd *cobra.Command, args []string) {
 		fmt.Fprintf(cmd.ErrOrStderr(), "can not create axiom client: %s\n", err)
 	}
 
-	cmd.Println("exporting from azure to axiom")
+	if axiomDatasetPrefix != "" {
+		fmt.Fprintf(cmd.OutOrStdout(), "using axiom dataset prefix: %s\n", axiomDatasetPrefix)
+	}
 
 	poller := poll.NewPoller(workerPoolSize)
-	if err := poller.Start(ctx, azclient, axiclient, monitor.NewStorageAccountMonitor(storageURL)); err != nil {
+	axmclient := &axm.Client{
+		Client:        axiclient,
+		DatasetPrefix: axiomDatasetPrefix,
+	}
+
+	if err := poller.Start(ctx, azclient, axmclient, monitor.NewStorageAccountMonitor(storageURL)); err != nil {
 		fmt.Fprintf(cmd.ErrOrStderr(), "can not start poller: %s\n", err)
 	}
 
